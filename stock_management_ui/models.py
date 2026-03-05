@@ -7,7 +7,6 @@ class Branches(models.Model):
     branch_name = models.CharField(db_column='Branch_name', max_length=100, blank=False, null=False)
     branch_phone_number = models.CharField(db_column='Branch_phone_number', max_length=15, blank=True, null=True)
     branch_city = models.CharField(db_column='Branch_city', max_length=50, blank=True, null=True)
-    is_deleted = models.BooleanField(db_column='Is_deleted', default = False)
 
     class Meta:
         managed = False

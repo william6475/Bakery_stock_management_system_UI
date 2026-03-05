@@ -1,16 +1,21 @@
+{% load static %}
 <!doctype html>
 <html lang="english">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'stock_management_ui/styles.css' %}">
     <title>Bakery stock management system</title>
+    {% block head %}{% endblock %}
 </head>
-<body>
+<body {% block body_attributes %}{% endblock %}>
     <div class="topnav">
-        #Navbar elements in this block
+        <!--Navbar elements in this block-->
         {% block navbar %}
         {% endblock %}
     </div>
     <h1>{% block title %}{% endblock %}</h1>
+    {% block body %}{% endblock %}
+    {% block js_link %}{% endblock %}
 </body>
 </html>

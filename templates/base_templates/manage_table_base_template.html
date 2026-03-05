@@ -1,3 +1,58 @@
 {% extends "base_templates/base_template.html" %}
+{% load static %}
 
-#Use loops like the lesson 7 youtube video to make elements for each table field display and a row for each record
+{% block head %}
+    <script src="{% static 'stock_management_ui/manage_table_base_template.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+    <h1>Hello</h1>
+{% endblock %}
+
+<!--Calls a JS function to disable the insert row form field until add row button clicked-->
+{% block body_attributes %}
+    onload="hide_block_add_record_form()"
+{% endblock %}
+
+{% block body %}
+    <!--Form to add new record-->
+    <form>
+        <button id="add_row_button" type="button" onclick="show_unblock_record_form()">Add row</button>
+        <table>
+            <!--Field labels-->
+            <tr>
+                {% for field in info.fields %}
+                    <th class="field_labels"><label class="field_label">{{ field }}</label></th>
+                {% endfor %}
+            </tr>
+
+        <!--Form for new record insertion-->
+        <tr>
+            {% for field in info.fields %}
+                <td>
+                    <input type="text" class="add_row_form_element">
+                </td>
+            {% endfor %}
+            <td>
+                <button type="button"  class="add_row_form_element" onclick="hide_block_add_record_form()">Save data</button>
+            </td>
+        </tr>
+        <!--Displays the actual data-->
+        {% for row in info.field_values %}
+            <tr>
+                {% for value in row %}
+                    <td class="td">
+                        {{ value }}
+                    </td>
+                {% endfor %}
+                <td>
+                    <button type="button">Edit</button>
+                </td>
+                <td>
+                    <button type="button">Delete</button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    </form>
+{% endblock %}
