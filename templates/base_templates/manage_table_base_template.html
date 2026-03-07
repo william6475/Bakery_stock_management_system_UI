@@ -5,19 +5,21 @@
     <script src="{% static 'stock_management_ui/manage_table_base_template.js' %}"></script>
 {% endblock %}
 
-{% block title %}
-    <h1>Hello</h1>
-{% endblock %}
-
-<!--Calls a JS function to disable the insert row form field until add row button clicked-->
+<!--Hides the HTML form if not needed-->
 {% block body_attributes %}
-    onload="hide_block_add_record_form()"
+    {% if not info.row_editing_data %}
+        onload="hide_block_add_record_form()"
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-    <!--Form to add new record-->
-    <form>
-        <button id="add_row_button" type="button" onclick="show_unblock_record_form()">Add row</button>
+    {{ info.crud_error }}
+    <!--Form to manage CRUD operations -->
+    <form method="post" action="{% block viewname %}{% endblock %}" name="crud_form">
+    {% csrf_token %}
+        {% if not info.row_editing_data %}
+            <button id="add_row_button" type="button" onclick="show_unblock_record_form()">Add row</button>
+        {% endif%}
         <table>
             <!--Field labels-->
             <tr>
@@ -28,31 +30,24 @@
 
         <!--Form for new record insertion-->
         <tr>
-            {% for field in info.fields %}
+        <td>
+        </td>
+        <!--If the form should load blank-->
+        {% if not info.row_editing_data %}
+            {% for field in info.unformatted_field_names %}
                 <td>
-                    <input type="text" class="add_row_form_element">
+                    <input type="text" name="{{ field }}" class="add_row_form_element">
                 </td>
             {% endfor %}
             <td>
-                <button type="button"  class="add_row_form_element" onclick="hide_block_add_record_form()">Save data</button>
+                <input type="submit"  class="add_row_form_element" onclick="hide_block_add_record_form()" name="create_row" value="Save data">
             </td>
         </tr>
+        {% endif %}
+
         <!--Displays the actual data-->
-        {% for row in info.field_values %}
-            <tr>
-                {% for value in row %}
-                    <td class="td">
-                        {{ value }}
-                    </td>
-                {% endfor %}
-                <td>
-                    <button type="button">Edit</button>
-                </td>
-                <td>
-                    <button type="button">Delete</button>
-                </td>
-            </tr>
-        {% endfor %}
+        {% block displaydata %}{% endblock %}
+
     </table>
     </form>
 {% endblock %}

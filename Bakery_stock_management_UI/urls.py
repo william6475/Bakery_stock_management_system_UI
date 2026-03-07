@@ -21,5 +21,6 @@ from stock_management_ui import views
 urlpatterns = [
     path('', views.login, name='login'),
     path('login/', views.login, name='login'),
-    path('manage_table_base_template/', views.manage_table_base_template, name='manage_table_base_template'),
+    path('manage_branches/', views.manage_branches, name='manage_branches'),
+    path('manage_item_types/', views.manage_item_types, name='manage_item_types'),
 ]

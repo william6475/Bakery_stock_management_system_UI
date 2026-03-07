@@ -14,6 +14,9 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+#Loads the .env file to give the cleaver cloud database credentials
+load_dotenv()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -107,6 +110,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Lists webpages trusted otherwise unsafe to take html POST requests from
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000/manage_table_base_template/'
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

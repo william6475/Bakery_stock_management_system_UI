@@ -7,6 +7,7 @@ class Branches(models.Model):
     branch_name = models.CharField(db_column='Branch_name', max_length=100, blank=False, null=False)
     branch_phone_number = models.CharField(db_column='Branch_phone_number', max_length=15, blank=True, null=True)
     branch_city = models.CharField(db_column='Branch_city', max_length=50, blank=True, null=True)
+    is_deleted = models.BooleanField(db_column='Is_deleted', default=False)
 
     class Meta:
         managed = False
@@ -98,14 +99,14 @@ class SaleProducts(models.Model):
 #Accesses stock level for each branch
 class ItemStock(models.Model):
     stock_id = models.AutoField(db_column='Stock_ID', primary_key=True)
-    item = models.ForeignKey(InventoryItems, models.DO_NOTHING, db_column='Item_ID')
+    item_id = models.ForeignKey(InventoryItems, models.DO_NOTHING, db_column='Item_ID')
     branch = models.ForeignKey(Branches, models.DO_NOTHING, db_column='Branch_ID')
     item_quantity = models.PositiveSmallIntegerField(db_column='Item_quantity', blank=False, null=False)
 
     class Meta:
         managed = False
         db_table = 'Item_stock'
-        unique_together = (('item', 'branch'),)
+        unique_together = (('item_id', 'branch'),)
 
 #Accesses the ingredients needed to make 1 of a product
 class ProductIngredients(models.Model):
