@@ -65,7 +65,7 @@ class Products(models.Model):
     item_id = models.ForeignKey(InventoryItems, models.DO_NOTHING, db_column='Item_ID')
     product_category = models.CharField(max_length=6, choices=Product_category_choices, blank=False, null=False)
     product_price = models.DecimalField(db_column='Product_price', max_digits=8, decimal_places=2, blank=False, null=False)
-    product_shelf_life_seconds = models.PositiveSmallIntegerField(db_column='Product_shelf_life_seconds', blank=False, null=False)
+    product_shelf_life_seconds = models.PositiveIntegerField(db_column='Product_shelf_life_seconds', blank=False, null=False)
     is_deleted = models.BooleanField(db_column='Is_deleted', default = False) #Only changeable through marking the corresponding InventoryItems record as deleted
 
     class Meta:

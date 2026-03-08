@@ -1,7 +1,7 @@
 {% extends "base_templates/base_template.html" %}
 {% load static %}
 
-{% block head %}
+{% block js_link%}
     <script src="{% static 'stock_management_ui/manage_table_base_template.js' %}"></script>
 {% endblock %}
 
@@ -26,6 +26,7 @@
                 {% for field in info.fields %}
                     <th class="field_labels"><label class="field_label">{{ field }}</label></th>
                 {% endfor %}
+            {% block aditionalfields %}{% endblock %}
             </tr>
 
         <!--Form for new record insertion-->

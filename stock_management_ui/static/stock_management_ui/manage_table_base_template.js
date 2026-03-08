@@ -4,7 +4,6 @@ function hide_block_add_record_form(is_edit_operation) {
      for (let i = 0; i < form_elements.length; i++) {
         form_elements[i].style.display = "none";
         form_elements[i].style.disabled = true;
-
      }
 
     //Show the add row button
