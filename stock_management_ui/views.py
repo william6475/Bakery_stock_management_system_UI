@@ -301,3 +301,91 @@ def manage_stock(request):
         'row_editing_data': row_editing_data,
     }
     return render(request, 'manage_stock.html', {'info': info})
+
+def manage_sales(request):
+
+    #PREPARING DATA TO SEND TO THE WEBPAGE
+
+    sale = Sales.objects.get(sale_id=1)
+    unfiltered_fields = sale._meta.get_fields()
+    data = Sales.objects.all()
+
+    #Filter fields to names which are formated to be easily readable
+    readable_fields = [field.verbose_name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "is_deleted"]
+
+    #Filter fields to their plain names (Used for form input name attribute)
+    unformatted_field_names = [field.name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "sale_id" and field.name != "is_deleted"]
+
+    #Extract the field values from the gathered data
+    sale_fields = ["sale_id", "branch_id", "sale_date_time", "is_card_payment", "is_deleted"]
+    field_values = []
+    for record in data:
+        if getattr(record, 'is_deleted') == False:
+            filtered_fields = [getattr(record, field) if field != "branch_id" else record.branch_id_id if field == "branch_id" else None for field in sale_fields]
+            field_values.append(filtered_fields)
+
+
+
+    #CRUD MANAGEMENT
+
+    row_editing_data = None
+    #Displays error to user if CRUD operation fails
+    crud_error = ""
+    if request.method == "POST":
+        #Handles requests to add row to database
+        if 'create_row' in request.POST:
+            create_form = SalesForm(request.POST)
+            if create_form.is_valid():
+                create_form.save()
+                return HttpResponseRedirect('/manage_sales')
+            else:
+                crud_error = create_form.errors
+
+        #Handles record deletion requests
+        elif 'delete_row' in request.POST:
+            button_pressed = request.POST.get('delete_row')
+
+            sale = Sales.objects.get(sale_id=button_pressed)
+            sale.is_deleted = True
+            sale.save()
+            return HttpResponseRedirect('/manage_sales')
+
+        #Handles record edit requests once the user submits the edit
+        elif 'submit_edit_row' in request.POST:
+            button_pressed = request.POST.get('submit_edit_row')
+            sale = Sales.objects.get(sale_id=button_pressed)
+            edited_sale = SalesForm(request.POST, instance=sale)
+            if edited_sale.is_valid():
+                edited_sale.save()
+                # Reload page with new values
+                return HttpResponseRedirect('/manage_sales')
+            else:
+                crud_error = edited_sale.errors
+
+
+        #Handles record edit requests before the edit is submitted
+        elif 'edit_row' in request.POST:
+            button_pressed = request.POST.get('edit_row')
+            sale = Sales.objects.get(sale_id=button_pressed)
+            row_editing_data = SalesForm(instance=sale)
+
+            info = {
+                'sale': sale,
+                'fields': readable_fields,
+                'field_values': field_values,
+                'unformatted_field_names': unformatted_field_names,
+                'crud_error': crud_error,
+                'row_editing_data': row_editing_data,
+            }
+
+            return render(request, 'manage_sales.html', {'info': info})
+
+    info = {
+        'sale': sale,
+        'fields': readable_fields,
+        'field_values': field_values,
+        'unformatted_field_names': unformatted_field_names,
+        'crud_error': crud_error,
+        'row_editing_data': row_editing_data,
+    }
+    return render(request, 'manage_sales.html', {'info': info})
