@@ -214,3 +214,90 @@ def manage_item_types(request):
         'aditional_fields': product_fields,
     }
     return render(request, 'manage_item_types.html', {'info': info})
+
+def manage_stock(request):
+
+    #PREPARING DATA TO SEND TO THE WEBPAGE
+
+    stock = ItemStock.objects.get(stock_id=1)
+    unfiltered_fields = stock._meta.get_fields()
+    data = ItemStock.objects.all()
+
+    #Filter fields to names which are formated to be easily readable
+    readable_fields = [field.verbose_name for field in unfiltered_fields if hasattr(field, 'verbose_name')]
+
+    #Filter fields to their plain names (Used for form input name attribute)
+    unformatted_field_names = [field.name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "stock_id"]
+
+    #Extract the field values from the gathered data
+    stock_fields = ["stock_id", "item_id", "branch", "item_quantity"]
+    field_values = []
+    for record in data:
+        filtered_fields = [getattr(record, field) if field != "item_id" and field != "branch" else record.item_id_id if field == "item_id" else record.branch_id if field == "branch" else None for field in stock_fields]
+        field_values.append(filtered_fields)
+
+
+
+    #CRUD MANAGEMENT
+
+    row_editing_data = None
+    #Displays error to user if CRUD operation fails
+    crud_error = ""
+    if request.method == "POST":
+        #Handles requests to add row to database
+        if 'create_row' in request.POST:
+            create_form = ItemStockForm(request.POST)
+            if create_form.is_valid():
+                create_form.save()
+                return HttpResponseRedirect('/manage_stock')
+            else:
+                crud_error = create_form.errors
+
+        #Handles record deletion requests
+        elif 'delete_row' in request.POST:
+            button_pressed = request.POST.get('delete_row')
+
+            stock = ItemStock.objects.get(stock_id=button_pressed)
+            stock.is_deleted = True
+            stock.save()
+            return HttpResponseRedirect('/manage_stock')
+
+        #Handles record edit requests once the user submits the edit
+        elif 'submit_edit_row' in request.POST:
+            button_pressed = request.POST.get('submit_edit_row')
+            stock = ItemStock.objects.get(stock_id=button_pressed)
+            edited_stock = ItemStockForm(request.POST, instance=stock)
+            if edited_stock.is_valid():
+                edited_stock.save()
+                # Reload page with new values
+                return HttpResponseRedirect('/manage_stock')
+            else:
+                crud_error = edited_stock.errors
+
+
+        #Handles record edit requests before the edit is submitted
+        elif 'edit_row' in request.POST:
+            button_pressed = request.POST.get('edit_row')
+            stock = ItemStock.objects.get(stock_id=button_pressed)
+            row_editing_data = ItemStockForm(instance=stock)
+
+            info = {
+                'stock': stock,
+                'fields': readable_fields,
+                'field_values': field_values,
+                'unformatted_field_names': unformatted_field_names,
+                'crud_error': crud_error,
+                'row_editing_data': row_editing_data,
+            }
+
+            return render(request, 'manage_stock.html', {'info': info})
+
+    info = {
+        'branch': stock,
+        'fields': readable_fields,
+        'field_values': field_values,
+        'unformatted_field_names': unformatted_field_names,
+        'crud_error': crud_error,
+        'row_editing_data': row_editing_data,
+    }
+    return render(request, 'manage_stock.html', {'info': info})

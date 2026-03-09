@@ -26,6 +26,7 @@
                 {% for field in info.fields %}
                     <th class="field_labels"><label class="field_label">{{ field }}</label></th>
                 {% endfor %}
+            <!--Aditional fields for if one webpage edits two tables-->
             {% block aditionalfields %}{% endblock %}
             </tr>
 
@@ -33,7 +34,7 @@
         <tr>
         <td>
         </td>
-        <!--If the form should load blank-->
+        <!--If the add record form should load blank-->
         {% if not info.row_editing_data %}
             {% for field in info.unformatted_field_names %}
                 <td>
