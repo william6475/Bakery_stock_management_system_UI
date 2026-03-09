@@ -32,8 +32,8 @@
 
         <!--Form for new record insertion-->
         <tr>
-        <td>
-        </td>
+        <!--Block to add additional td elements to take up space where un-editable primary keys would have been-->
+        {% block add_record_uneditable_field_spacing %}{% endblock %}
         <!--If the add record form should load blank-->
         {% if not info.row_editing_data %}
             {% for field in info.unformatted_field_names %}

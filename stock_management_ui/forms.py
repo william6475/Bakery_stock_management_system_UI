@@ -32,7 +32,7 @@ class SalesForm(ModelForm):
         model=Sales
         fields = ["branch_id", "sale_date_time", "is_card_payment", "is_deleted"]
 
-class SalesProductsForm(ModelForm):
+class SaleProductsForm(ModelForm):
     class Meta:
         model=SaleProducts
         fields=["sale_id", "product_id", "product_quantity", "is_deleted"]

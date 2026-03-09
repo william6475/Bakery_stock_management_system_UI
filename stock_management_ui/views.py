@@ -4,7 +4,7 @@ from django.db.models.functions import NullIf
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from stock_management_ui.models import Branches, Deliveries, InventoryItems, DeliveryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
-from stock_management_ui.forms import BranchesForm, DeliveriesForm, InventoryItemsForm, DeliveryItemsForm, ProductsForm, SalesForm, SalesProductsForm, ItemStockForm, ProductIngredientsForm
+from stock_management_ui.forms import BranchesForm, DeliveriesForm, InventoryItemsForm, DeliveryItemsForm, ProductsForm, SalesForm, SaleProductsForm, ItemStockForm, ProductIngredientsForm
 def login(request):
     return render(request, 'login.html')
 
@@ -389,3 +389,100 @@ def manage_sales(request):
         'row_editing_data': row_editing_data,
     }
     return render(request, 'manage_sales.html', {'info': info})
+
+def manage_sale_products(request):
+
+    #PREPARING DATA TO SEND TO THE WEBPAGE
+
+    sale_product = SaleProducts.objects.get(sale_id=1, product_id=16)
+    unfiltered_fields = sale_product._meta.get_fields()
+    data = SaleProducts.objects.all()
+
+    #Filter fields to names which are formated to be easily readable
+    readable_fields = [field.verbose_name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "is_deleted" and field.name != "pk"]
+
+    #Filter fields to their plain names (Used for form input name attribute)
+    unformatted_field_names = [field.name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "is_deleted" and field.name != "pk"]
+
+    #Extract the field values from the gathered data
+    sale_product_fields = ["sale_id", "product_id", "product_quantity"]
+    field_values = []
+    for record in data:
+        if getattr(record, 'is_deleted') == False:
+            filtered_fields = [getattr(record, field) if field == "product_quantity" else record.sale_id_id if field == "sale_id" else record.product_id_id if field == "product_id" else None for field in sale_product_fields]
+            field_values.append(filtered_fields)
+
+
+
+    #CRUD MANAGEMENT
+
+    row_editing_data = None
+    #Displays error to user if CRUD operation fails
+    crud_error = ""
+    if request.method == "POST":
+        #Handles requests to add row to database
+        if 'create_row' in request.POST:
+            print("hello0")
+            create_form = SaleProductsForm(request.POST)
+            if create_form.is_valid():
+                create_form.save()
+                return HttpResponseRedirect('/manage_sale_products')
+            else:
+                crud_error = create_form.errors
+
+        #Handles record deletion requests
+        elif 'delete_row' in request.POST:
+            button_pressed = request.POST.get('delete_row')
+            #Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split()
+            sale_product = SaleProducts.objects.get(sale_id=composite_key[0], product_id=composite_key[1])
+            sale_product.is_deleted = True
+            sale_product.save()
+            return HttpResponseRedirect('/manage_sale_products')
+
+        #Handles record edit requests once the user submits the edit
+        elif 'submit_edit_row' in request.POST:
+            button_pressed = request.POST.get('submit_edit_row')
+            # Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split("|||")
+            sale_product = SaleProducts.objects.get(sale_id=composite_key[0], product_id=composite_key[1])
+            edited_sale_product = SaleProductsForm(request.POST, instance=sale_product)
+            if edited_sale_product.is_valid():
+                edited_sale_product.save()
+                # Reload page with new values
+                return HttpResponseRedirect('/manage_sale_products')
+            else:
+                crud_error = edited_sale_product.errors
+
+
+        #Handles record edit requests before the edit is submitted
+        elif 'edit_row' in request.POST:
+            button_pressed = request.POST.get('edit_row')
+            #Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split("|||")
+            print(button_pressed)
+            print(composite_key)
+            sale_product = SaleProducts.objects.get(sale_id=composite_key[0], product_id=composite_key[1])
+            row_editing_data = SaleProductsForm(instance=sale_product)
+
+
+            info = {
+                'sale_product': sale_product,
+                'fields': readable_fields,
+                'field_values': field_values,
+                'unformatted_field_names': unformatted_field_names,
+                'crud_error': crud_error,
+                'row_editing_data': row_editing_data,
+            }
+
+            return render(request, 'manage_sale_products.html', {'info': info})
+
+    info = {
+        'sale_product': sale_product,
+        'fields': readable_fields,
+        'field_values': field_values,
+        'unformatted_field_names': unformatted_field_names,
+        'crud_error': crud_error,
+        'row_editing_data': row_editing_data,
+    }
+    return render(request, 'manage_sale_products.html', {'info': info})
