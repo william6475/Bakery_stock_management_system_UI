@@ -422,7 +422,6 @@ def manage_sale_products(request):
     if request.method == "POST":
         #Handles requests to add row to database
         if 'create_row' in request.POST:
-            print("hello0")
             create_form = SaleProductsForm(request.POST)
             if create_form.is_valid():
                 create_form.save()
@@ -434,7 +433,7 @@ def manage_sale_products(request):
         elif 'delete_row' in request.POST:
             button_pressed = request.POST.get('delete_row')
             #Split the returned value into a list of composite key fields
-            composite_key = button_pressed.split()
+            composite_key = button_pressed.split("|||")
             sale_product = SaleProducts.objects.get(sale_id=composite_key[0], product_id=composite_key[1])
             sale_product.is_deleted = True
             sale_product.save()
@@ -460,8 +459,6 @@ def manage_sale_products(request):
             button_pressed = request.POST.get('edit_row')
             #Split the returned value into a list of composite key fields
             composite_key = button_pressed.split("|||")
-            print(button_pressed)
-            print(composite_key)
             sale_product = SaleProducts.objects.get(sale_id=composite_key[0], product_id=composite_key[1])
             row_editing_data = SaleProductsForm(instance=sale_product)
 
@@ -486,3 +483,95 @@ def manage_sale_products(request):
         'row_editing_data': row_editing_data,
     }
     return render(request, 'manage_sale_products.html', {'info': info})
+
+def manage_product_ingredients(request):
+
+    #PREPARING DATA TO SEND TO THE WEBPAGE
+
+    product_ingredient = ProductIngredients.objects.get(product_id=1, ingredient_id=50)
+    unfiltered_fields = product_ingredient._meta.get_fields()
+    data = ProductIngredients.objects.all()
+
+    #Filter fields to names which are formated to be easily readable
+    readable_fields = [field.verbose_name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "pk"]
+
+    #Filter fields to their plain names (Used for form input name attribute)
+    unformatted_field_names = [field.name for field in unfiltered_fields if hasattr(field, 'verbose_name') and field.name != "pk"]
+
+    #Extract the field values from the gathered data
+    product_ingredient_fields = ["product_id", "ingredient_id", "ingredient_quantity"]
+    field_values = []
+    for record in data:
+        filtered_fields = [getattr(record, field) if field == "ingredient_quantity" else record.product_id_id if field == "product_id" else record.ingredient_id_id if field == "ingredient_id" else None for field in product_ingredient_fields]
+        field_values.append(filtered_fields)
+
+
+
+    #CRUD MANAGEMENT
+
+    row_editing_data = None
+    #Displays error to user if CRUD operation fails
+    crud_error = ""
+    if request.method == "POST":
+        #Handles requests to add row to database
+        if 'create_row' in request.POST:
+            create_form = ProductIngredientsForm(request.POST)
+            if create_form.is_valid():
+                create_form.save()
+                return HttpResponseRedirect('/manage_product_ingredients')
+            else:
+                crud_error = create_form.errors
+
+        #Handles record deletion requests
+        elif 'delete_row' in request.POST:
+            button_pressed = request.POST.get('delete_row')
+            #Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split("|||")
+            product_ingredient = ProductIngredients.objects.get(product_id=composite_key[0], ingredient_id=composite_key[1])
+            product_ingredient.delete()
+            return HttpResponseRedirect('/manage_product_ingredients')
+
+        #Handles record edit requests once the user submits the edit
+        elif 'submit_edit_row' in request.POST:
+            button_pressed = request.POST.get('submit_edit_row')
+            # Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split("|||")
+            product_ingredient = ProductIngredients.objects.get(product_id=composite_key[0], ingredient_id=composite_key[1])
+            edited_product_ingredient = ProductIngredientsForm(request.POST, instance=product_ingredient)
+            if edited_product_ingredient.is_valid():
+                edited_product_ingredient.save()
+                # Reload page with new values
+                return HttpResponseRedirect('/manage_product_ingredients')
+            else:
+                crud_error = edited_product_ingredient.errors
+
+
+        #Handles record edit requests before the edit is submitted
+        elif 'edit_row' in request.POST:
+            button_pressed = request.POST.get('edit_row')
+            #Split the returned value into a list of composite key fields
+            composite_key = button_pressed.split("|||")
+            product_ingredient = ProductIngredients.objects.get(product_id=composite_key[0], ingredient_id=composite_key[1])
+            row_editing_data = ProductIngredientsForm(instance=product_ingredient)
+
+
+            info = {
+                'product_ingredient': product_ingredient,
+                'fields': readable_fields,
+                'field_values': field_values,
+                'unformatted_field_names': unformatted_field_names,
+                'crud_error': crud_error,
+                'row_editing_data': row_editing_data,
+            }
+
+            return render(request, 'manage_product_ingredients.html', {'info': info})
+
+    info = {
+        'product_ingredient': product_ingredient,
+        'fields': readable_fields,
+        'field_values': field_values,
+        'unformatted_field_names': unformatted_field_names,
+        'crud_error': crud_error,
+        'row_editing_data': row_editing_data,
+    }
+    return render(request, 'manage_product_ingredients.html', {'info': info})

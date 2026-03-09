@@ -1,11 +1,11 @@
 {% extends "base_templates/manage_table_base_template.html" %}
 
 {% block title %}
-    Manage sale products
+    Manage product ingredients
 {% endblock %}
 
 {% block viewname %}
-    {% url 'manage_sale_products' %}
+    {% url 'manage_product_ingredients' %}
 {% endblock %}
 
 <!--Displays the actual data-->
@@ -14,7 +14,7 @@
             {% for row in info.field_values %}
 
             <!--If the row is not being edited-->
-            {% if row.0 != info.row_editing_data.instance.sale_id_id or row.1 !=  info.row_editing_data.instance.product_id_id %}
+            {% if row.0 != info.row_editing_data.instance.product_id_id or row.1 !=  info.row_editing_data.instance.ingredient_id_id %}
                 <tr>
                     {% for value in row %}
                         <td class="td">
@@ -30,7 +30,7 @@
                 </tr>
             {% endif %}
             <!--If the row is being edited-->
-            {% if row.0 == info.row_editing_data.instance.sale_id_id and row.1 == info.row_editing_data.instance.product_id_id %}
+            {% if row.0 == info.row_editing_data.instance.product_id_id and row.1 == info.row_editing_data.instance.ingredient_id_id %}
                 {% for field in info.row_editing_data %}
                     {% if field.name != "is_deleted" %}
                         <td>
@@ -39,7 +39,7 @@
                     {% endif %}
                 {% endfor %}
                 <td>
-                    <button type="submit" name="submit_edit_row" value="{{ info.row_editing_data.instance.sale_id_id }}|||{{ info.row_editing_data.instance.product_id_id }}">Save edit</button>
+                    <button type="submit" name="submit_edit_row" value="{{ info.row_editing_data.instance.product_id_id }}|||{{ info.row_editing_data.instance.ingredient_id_id }}">Save edit</button>
                 </td>
             {% endif %}
         {% endfor %}

@@ -117,4 +117,4 @@ class ProductIngredients(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'ProductIngredients'
+        db_table = 'Product_ingredients'
