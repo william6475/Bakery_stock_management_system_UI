@@ -18,66 +18,72 @@
 <!--Displays the actual data-->
 <!--(Could not include in manage_table_base_template.html as cannot put block to customise ID field name within the logic of a templating language if)-->
 {% block displaydata %}
-    {% for row in info.field_values %}
-        <!--If the row is not being edited-->
-        {% if row.0 != info.row_editing_data.instance.item_id %}
-            <tr>
-            {% for value in row %}
-                <td class="td">
-                    {{ value }}
-                </td>
-            {% endfor %}
-            <td>
-                <button type="submit" value="{{ row.0 }}" name="edit_row">Edit</button>
-            </td>
-            <td>
-                <button type="submit" value="{{ row.0 }}" name="delete_row">Delete</button>
-            </td>
-            </tr>
-        {% endif %}
-
-        <!--If the row is being edited-->
-        {% if info.row_editing_data %}
-                {% if row.0 == info.row_editing_data.instance.item_id %}
-                    <tr>
-                    <td></td>
-                    {% for field in info.row_editing_data %}
-                        {% if field.name != "is_deleted" %}
-                            <td>
-                                <input type="text" name="{{ field.name }}" class="add_row_form_element" value="{{ field.value }}">
-                            </td>
-                        {% endif %}
-                    {% endfor %}
-                    {% if not info.product_row_editing_data %}
-                        <td>
-                            <button type="submit"  name="submit_edit_row" value="{{ info.row_editing_data.instance.item_id }}">Save edit</button>
-                        </td>
-                    {% endif %}
+    {% if perms.stock_management_ui.view_inventoryitems %}
+        {% for row in info.field_values %}
+            <!--If the row is not being edited-->
+            {% if row.0 != info.row_editing_data.instance.item_id %}
+                <tr>
+                {% for value in row %}
+                    <td class="td">
+                        {{ value }}
+                    </td>
+                {% endfor %}
+                {% if perms.stock_management_ui.change_inventoryitems %}
+                    <td>
+                        <button type="submit" value="{{ row.0 }}" name="edit_row">Edit</button>
+                    </td>
                 {% endif %}
+                {% if perms.stock_management_ui.delete_inventoryitems %}
+                    <td>
+                        <button type="submit" value="{{ row.0 }}" name="delete_row">Delete</button>
+                    </td>
+                {% endif %}
+                </tr>
+            {% endif %}
 
-
-            <!--If the row is being edited and has a corresponding products record-->
-            {% if info.product_row_editing_data %}
+            <!--If the row is being edited-->
+            {% if info.row_editing_data %}
                     {% if row.0 == info.row_editing_data.instance.item_id %}
-                        <!--Disabled input field for item_id as it is not editable but we need a value to save back-->
-                        <td class="hidden_element">
-                            <input type="text" id="foreign_item_id" name="item_id" value="{{ info.row_editing_data.instance.item_id }}" style="display: none">
-                        </td>
-                        {% for field in info.product_row_editing_data %}
-                            {% if field.name != "item_id" and field.name != "is_deleted" %}
+                        <tr>
+                        <td></td>
+                        {% for field in info.row_editing_data %}
+                            {% if field.name != "is_deleted" %}
                                 <td>
                                     <input type="text" name="{{ field.name }}" class="add_row_form_element" value="{{ field.value }}">
                                 </td>
                             {% endif %}
                         {% endfor %}
-                    <td>
-                        <button type="submit"  name="submit_edit_row" value="{{ info.row_editing_data.instance.item_id }}">Save edit</button>
-                    </td>
+                        {% if not info.product_row_editing_data %}
+                            <td>
+                                <button type="submit"  name="submit_edit_row" value="{{ info.row_editing_data.instance.item_id }}">Save edit</button>
+                            </td>
+                        {% endif %}
                     {% endif %}
+
+
+                <!--If the row is being edited and has a corresponding products record-->
+                {% if info.product_row_editing_data %}
+                        {% if row.0 == info.row_editing_data.instance.item_id %}
+                            <!--Disabled input field for item_id as it is not editable but we need a value to save back-->
+                            <td class="hidden_element">
+                                <input type="text" id="foreign_item_id" name="item_id" value="{{ info.row_editing_data.instance.item_id }}" style="display: none">
+                            </td>
+                            {% for field in info.product_row_editing_data %}
+                                {% if field.name != "item_id" and field.name != "is_deleted" %}
+                                    <td>
+                                        <input type="text" name="{{ field.name }}" class="add_row_form_element" value="{{ field.value }}">
+                                    </td>
+                                {% endif %}
+                            {% endfor %}
+                        <td>
+                            <button type="submit"  name="submit_edit_row" value="{{ info.row_editing_data.instance.item_id }}">Save edit</button>
+                        </td>
+                        {% endif %}
+                {% endif %}
+                </tr>
             {% endif %}
-            </tr>
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block add_record_uneditable_field_spacing %}

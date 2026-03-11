@@ -11,6 +11,7 @@
 <!--Displays the actual data-->
 <!--(Could not include in manage_table_base_template.html as cannot put block to customise ID field name within the logic of a templating language if)-->
 {% block displaydata %}
+    {% if perms.stock_management_ui.view_itemstock %}
             {% for row in info.field_values %}
             <!--If the row is not being edited-->
             {% if row.0 != info.row_editing_data.instance.stock_id %}
@@ -20,12 +21,16 @@
                            {{ value }}
                        </td>
                     {% endfor %}
-                    <td>
-                        <button type="submit" value="{{ row.0 }}" name="edit_row">Edit</button>
-                    </td>
-                    <td>
-                        <button type="submit" value="{{ row.0 }}" name="delete_row">Delete</button>
-                    </td>
+                    {% if perms.stock_management_ui.change_itemstock %}
+                        <td>
+                            <button type="submit" value="{{ row.0 }}" name="edit_row">Edit</button>
+                        </td>
+                    {% endif %}
+                    {% if perms.stock_management_ui.delete_itemstock %}
+                        <td>
+                            <button type="submit" value="{{ row.0 }}" name="delete_row">Delete</button>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endif %}
 
@@ -41,6 +46,7 @@
                 </td>
             {% endif %}
         {% endfor %}
+    {% endif %}
 {% endblock %}
 
 {% block add_record_uneditable_field_spacing %}

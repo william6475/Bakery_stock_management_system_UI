@@ -1,12 +1,13 @@
 from contextlib import nullcontext
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
-from django.db.models.functions import NullIf
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from stock_management_ui.models import Branches, InventoryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
 from stock_management_ui.forms import BranchesForm, InventoryItemsForm, ProductsForm, SalesForm, SaleProductsForm, ItemStockForm, ProductIngredientsForm
+from stock_management_ui.tests import can_access_sales
+
 def login_user(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -53,7 +54,7 @@ def shop_assistant_home(request):
     return render(request, 'shop_assistant_home.html')
 
 @login_required(login_url="/login/")
-@permission_required()
+@permission_required('stock_management_ui.view_branches')
 def manage_branches(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -128,6 +129,7 @@ def manage_branches(request):
                 'unformatted_field_names': unformatted_field_names,
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_branches',
             }
 
             return render(request, 'manage_branches.html', {'info': info})
@@ -139,10 +141,12 @@ def manage_branches(request):
         'unformatted_field_names': unformatted_field_names,
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_branches',
     }
     return render(request, 'manage_branches.html', {'info': info})
 
 @login_required(login_url="/login/")
+@permission_required('stock_management_ui.view_inventoryitems')
 def manage_item_types(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -246,6 +250,7 @@ def manage_item_types(request):
                 'row_editing_data': item_type_row_editing_data,
                 'product_row_editing_data': product_row_editing_data,
                 'aditional_fields': product_fields,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_inventoryitems',
             }
 
             return render(request, 'manage_item_types.html', {'info': info})
@@ -259,10 +264,12 @@ def manage_item_types(request):
         'row_editing_data': item_type_row_editing_data,
         'product_row_editing_data': product_row_editing_data,
         'aditional_fields': product_fields,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_inventoryitems',
     }
     return render(request, 'manage_item_types.html', {'info': info})
 
 @login_required(login_url="/login/")
+@permission_required('stock_management_ui.view_itemstock')
 def manage_stock(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -336,6 +343,7 @@ def manage_stock(request):
                 'unformatted_field_names': unformatted_field_names,
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_itemstock',
             }
 
             return render(request, 'manage_stock.html', {'info': info})
@@ -347,10 +355,12 @@ def manage_stock(request):
         'unformatted_field_names': unformatted_field_names,
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_itemstock',
     }
     return render(request, 'manage_stock.html', {'info': info})
 
 @login_required(login_url="/login/")
+@user_passes_test(can_access_sales)
 def manage_sales(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -425,6 +435,7 @@ def manage_sales(request):
                 'unformatted_field_names': unformatted_field_names,
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_sales',
             }
 
             return render(request, 'manage_sales.html', {'info': info})
@@ -436,10 +447,12 @@ def manage_sales(request):
         'unformatted_field_names': unformatted_field_names,
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_sales',
     }
     return render(request, 'manage_sales.html', {'info': info})
 
 @login_required(login_url="/login/")
+@user_passes_test(can_access_sales)
 def manage_sale_products(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -520,6 +533,7 @@ def manage_sale_products(request):
                 'unformatted_field_names': unformatted_field_names,
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_saleproducts',
             }
 
             return render(request, 'manage_sale_products.html', {'info': info})
@@ -531,10 +545,12 @@ def manage_sale_products(request):
         'unformatted_field_names': unformatted_field_names,
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_saleproducts',
     }
     return render(request, 'manage_sale_products.html', {'info': info})
 
 @login_required(login_url="/login/")
+@permission_required('stock_management_ui.view_productingredients')
 def manage_product_ingredients(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -613,6 +629,7 @@ def manage_product_ingredients(request):
                 'unformatted_field_names': unformatted_field_names,
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
+                'inheriting_page_add_row_permission': 'stock_management_ui.add_productingredients',
             }
 
             return render(request, 'manage_product_ingredients.html', {'info': info})
@@ -624,5 +641,6 @@ def manage_product_ingredients(request):
         'unformatted_field_names': unformatted_field_names,
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
+        'inheriting_page_add_row_permission': 'stock_management_ui.add_productingredients',
     }
     return render(request, 'manage_product_ingredients.html', {'info': info})

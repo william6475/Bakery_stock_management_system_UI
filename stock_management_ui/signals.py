@@ -101,7 +101,7 @@ def group_permission_asignment(sender, **kwargs):
     #Sales R
     baker.permissions.add(can_view_sales)
     #Sale products R
-    baker.permissions.add(can_view_saleproducts)
+    baker.permissions.add(can_view_productingredients)
 
     # Assign permissions to the shop assistant group
     #Stock RU
@@ -116,9 +116,7 @@ def group_permission_asignment(sender, **kwargs):
     shop_assistant.permissions.add(can_view_saleproducts)
 
     # Assign permissions to the till group
-    #Sales RU
-    till.permissions.add(can_view_sales)
+    #Sales C
     till.permissions.add(can_change_sales)
-    #Sale products RU
-    till.permissions.add(can_view_saleproducts)
+    #Sale products C
     till.permissions.add(can_change_saleproducts)

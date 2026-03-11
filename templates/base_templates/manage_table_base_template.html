@@ -17,7 +17,7 @@
     <!--Form to manage CRUD operations -->
     <form method="post" action="{% block viewname %}{% endblock %}" name="crud_form">
     {% csrf_token %}
-        {% if not info.row_editing_data %}
+        {% if not info.row_editing_data  and info.inheriting_page_add_row_permission in perms %}
             <button id="add_row_button" type="button" onclick="show_unblock_record_form()">Add row</button>
         {% endif%}
         <table>

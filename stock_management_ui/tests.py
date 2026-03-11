@@ -1,8 +1,14 @@
+from django.contrib.auth import authenticate, get_user_model
 from django.test import TestCase
-from stock_management_ui.models import Branches, Deliveries, InventoryItems, DeliveryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
 
 # Create your tests here.
-#NOTE: THIS IS IN THE CORRECT TEST FORMAT MABY JUST DELETE AND MAKE TESTS FROM SCRATCH
-branch = Branches.objects.get(branch_id = 2)
-print(branch.branch_id, branch.branch_name, branch.branch_phone_number, branch.branch_city, branch.is_deleted)
+def can_access_sales(request):
+    if request.groups.filter(name='till').exists():
+        return True
+    elif request.groups.filter(name='manager').exists():
+        return True
+    elif request.groups.filter(name='shop assistant').exists():
+        return True
+    else:
+        return False
 
