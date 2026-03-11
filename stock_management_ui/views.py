@@ -1,13 +1,59 @@
 from contextlib import nullcontext
 
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.db.models.functions import NullIf
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from stock_management_ui.models import Branches, Deliveries, InventoryItems, DeliveryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
-from stock_management_ui.forms import BranchesForm, DeliveriesForm, InventoryItemsForm, DeliveryItemsForm, ProductsForm, SalesForm, SaleProductsForm, ItemStockForm, ProductIngredientsForm
-def login(request):
+from stock_management_ui.models import Branches, InventoryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
+from stock_management_ui.forms import BranchesForm, InventoryItemsForm, ProductsForm, SalesForm, SaleProductsForm, ItemStockForm, ProductIngredientsForm
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        #Validate the login credentials
+        is_valid_user = authenticate(request, username=username, password=password)
+        if is_valid_user is not None:
+            #Login the user
+            login(request,is_valid_user)
+
+            #Redirect the user to the corresponding webpage for their account group
+            try:
+                group = request.user.groups.all()[0]
+                if group.name == "baker":
+                    return HttpResponseRedirect('/baker_home')
+                if group.name == "manager":
+                    return HttpResponseRedirect('/manager_home')
+                if group.name == "shop assistant":
+                    return HttpResponseRedirect('/shop_assistant_home')
+                if group.name == "till":
+                    return HttpResponseRedirect('/manage_sales')
+            except IndexError:
+                print("User account has no group")
+
+        else:
+            info={
+                'Invalid_login_error': 'Invalid login details. Try again.'
+            }
+            return render(request,"login.html", {'info': info})
+
     return render(request, 'login.html')
 
+@login_required(login_url="/login/")
+def baker_home(request):
+    return render(request, 'baker_home.html')
+
+@login_required(login_url="/login/")
+def manager_home(request):
+    return render(request, 'manager_home.html')
+
+@login_required(login_url="/login/")
+def shop_assistant_home(request):
+    return render(request, 'shop_assistant_home.html')
+
+@login_required(login_url="/login/")
+@permission_required()
 def manage_branches(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -96,6 +142,7 @@ def manage_branches(request):
     }
     return render(request, 'manage_branches.html', {'info': info})
 
+@login_required(login_url="/login/")
 def manage_item_types(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -215,6 +262,7 @@ def manage_item_types(request):
     }
     return render(request, 'manage_item_types.html', {'info': info})
 
+@login_required(login_url="/login/")
 def manage_stock(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -302,6 +350,7 @@ def manage_stock(request):
     }
     return render(request, 'manage_stock.html', {'info': info})
 
+@login_required(login_url="/login/")
 def manage_sales(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -390,6 +439,7 @@ def manage_sales(request):
     }
     return render(request, 'manage_sales.html', {'info': info})
 
+@login_required(login_url="/login/")
 def manage_sale_products(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
@@ -484,6 +534,7 @@ def manage_sale_products(request):
     }
     return render(request, 'manage_sale_products.html', {'info': info})
 
+@login_required(login_url="/login/")
 def manage_product_ingredients(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE

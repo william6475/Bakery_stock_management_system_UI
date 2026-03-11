@@ -138,3 +138,10 @@ STATIC_ROOT = 'staticfiles/'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = 'media/'
+
+#Enforces that users cannot perform add, view, change, delete operations without the correct authorisation
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
+    ]
+}

@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Branches, Deliveries, InventoryItems, DeliveryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
+from .models import Branches, InventoryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
 
 
 class BranchesForm(ModelForm):
@@ -7,20 +7,10 @@ class BranchesForm(ModelForm):
         model=Branches
         fields = ["branch_name", "branch_phone_number", "branch_city", "is_deleted"]
 
-class DeliveriesForm(ModelForm):
-    class Meta:
-        model=Deliveries
-        fields = ["branch_id", "delivery_date_time", "is_delivered"]
-
 class InventoryItemsForm(ModelForm):
     class Meta:
         model=InventoryItems
         fields = ["item_name", "item_cost", "item_category", "is_deleted"]
-
-class DeliveryItemsForm(ModelForm):
-    class Meta:
-        model=DeliveryItems
-        fields = ["delivery_id", "item_id", "item_quantity"]
 
 class ProductsForm(ModelForm):
     class Meta:

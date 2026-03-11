@@ -1,5 +1,10 @@
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+
+#Models to access database data
+#____________________________________________________________________________________________________
 
 #Accesses data for bakery chain branches
 class Branches(models.Model):
@@ -12,17 +17,6 @@ class Branches(models.Model):
     class Meta:
         managed = False
         db_table = 'Branches'
-
-#Accesses delivery data
-class Deliveries(models.Model):
-    delivery_id = models.AutoField(db_column='Delivery_ID', primary_key=True)
-    branch_id = models.ForeignKey(Branches, models.DO_NOTHING, db_column='Branch_ID')
-    delivery_date_time = models.DateTimeField(db_column='Delivery_date_time', blank=True, null=True)
-    is_delivered = models.BooleanField(db_column='Is_delivered', default = False)
-
-    class Meta:
-        managed = False
-        db_table = 'Deliveries'
 
 #Accesses the different item types which can be stored in stock
 class InventoryItems(models.Model):
@@ -40,17 +34,6 @@ class InventoryItems(models.Model):
     class Meta:
         managed = False
         db_table = 'Inventory_items'
-
-#Accesses the items within deliveries
-class DeliveryItems(models.Model):
-    pk = models.CompositePrimaryKey('delivery_id', 'item_id')
-    delivery_id = models.ForeignKey(Deliveries, models.DO_NOTHING, db_column='Delivery_ID')
-    item_id = models.ForeignKey('InventoryItems', models.DO_NOTHING, db_column='Item_ID')
-    item_quantity = models.PositiveSmallIntegerField(db_column='Item_quantity', null=False)
-
-    class Meta:
-        managed = False
-        db_table = 'Delivery_items'
 
 #Accesses product types
 #Products are also stored as item types in the InventoryItems table

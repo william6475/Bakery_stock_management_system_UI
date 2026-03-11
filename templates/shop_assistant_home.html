@@ -1,0 +1,11 @@
+{% extends "base_templates/base_template.html" %}
+{% block body %}
+    <a href="{% url 'manage_stock' %}" class="button-class">Update stock</a>
+    <br>
+    <a href="{% url 'manage_item_types' %}" class="button-class">View item types</a>
+    <br>
+    <a href="{% url 'manage_sales' %}" class="button-class">View sales</a>
+    <br>
+    <a href="{% url 'manage_product_ingredients' %}" class="button-class">View product ingredients</a>
+    <br>
+{% endblock %}

@@ -1,1 +1,28 @@
-{% extends "base_templates/base_template.html" %}
+{% load static %}
+<!doctype html>
+<html lang="english">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'stock_management_ui/styles.css' %}">
+    <title>Bakery stock management system</title>
+</head>
+<body>
+    <h1>Log in</h1>
+    <!--Display error if invalid credentials entered-->
+    {{ info.Invalid_login_error }}
+    <!--Form to take login details-->
+    <form method="post" action="/login/" name="login_form">
+        {% csrf_token %}
+        <label>Username</label>
+        <br>
+        <input type="text" name="username">
+        <br>
+        <label>Password</label>
+        <br>
+        <input type="text" name="password">
+        <br>
+        <input type="submit" name="create_row" value="Login">
+    </form>
+</body>
+</html>

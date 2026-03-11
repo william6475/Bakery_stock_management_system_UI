@@ -20,8 +20,11 @@ from stock_management_ui import views
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    path('', views.login, name='login'),
-    path('login/', views.login, name='login'),
+    path('', views.login_user, name='login'),
+    path('login/', views.login_user, name='login'),
+    path('baker_home/', views.baker_home, name='baker_home'),
+    path('manager_home/', views.manager_home, name='manager_home'),
+    path('shop_assistant_home/', views.shop_assistant_home, name='shop_assistant_home'),
     path('manage_branches/', views.manage_branches, name='manage_branches'),
     path('manage_item_types/', views.manage_item_types, name='manage_item_types'),
     path('manage_stock/', views.manage_stock, name='manage_stock'),
