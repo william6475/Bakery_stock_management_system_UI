@@ -7,6 +7,7 @@ from django.shortcuts import render
 from stock_management_ui.models import Branches, InventoryItems, Products, Sales, SaleProducts, ItemStock, ProductIngredients
 from stock_management_ui.forms import BranchesForm, InventoryItemsForm, ProductsForm, SalesForm, SaleProductsForm, ItemStockForm, ProductIngredientsForm
 from stock_management_ui.tests import can_access_sales
+from stock_management_ui.navbar_fields import get_navbar_fields
 
 def login_user(request):
     if request.method == "POST":
@@ -43,15 +44,27 @@ def login_user(request):
 
 @login_required(login_url="/login/")
 def baker_home(request):
-    return render(request, 'baker_home.html')
+    navbar_info = get_navbar_fields(request)
+    info = {
+        'navbar_info': navbar_info,
+    }
+    return render(request, 'baker_home.html', {'info': info})
 
 @login_required(login_url="/login/")
 def manager_home(request):
-    return render(request, 'manager_home.html')
+    navbar_info = get_navbar_fields(request)
+    info = {
+        'navbar_info': navbar_info,
+    }
+    return render(request, 'manager_home.html', {'info': info})
 
 @login_required(login_url="/login/")
 def shop_assistant_home(request):
-    return render(request, 'shop_assistant_home.html')
+    navbar_info = get_navbar_fields(request)
+    info = {
+        'navbar_info': navbar_info,
+    }
+    return render(request, 'shop_assistant_home.html', {'info': info})
 
 @login_required(login_url="/login/")
 @permission_required('stock_management_ui.view_branches')
@@ -76,6 +89,8 @@ def manage_branches(request):
         if getattr(record, 'is_deleted') == False:
             filtered_fields = [getattr(record, field) for field in branch_fields]
             field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
 
 
@@ -130,6 +145,7 @@ def manage_branches(request):
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_branches',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_branches.html', {'info': info})
@@ -142,6 +158,7 @@ def manage_branches(request):
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_branches',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_branches.html', {'info': info})
 
@@ -179,6 +196,8 @@ def manage_item_types(request):
                 except Products.DoesNotExist:
                     pass
         field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
     #CRUD MANAGEMENT
 
@@ -251,6 +270,7 @@ def manage_item_types(request):
                 'product_row_editing_data': product_row_editing_data,
                 'aditional_fields': product_fields,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_inventoryitems',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_item_types.html', {'info': info})
@@ -265,6 +285,7 @@ def manage_item_types(request):
         'product_row_editing_data': product_row_editing_data,
         'aditional_fields': product_fields,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_inventoryitems',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_item_types.html', {'info': info})
 
@@ -290,6 +311,8 @@ def manage_stock(request):
     for record in data:
         filtered_fields = [getattr(record, field) if field != "item_id" and field != "branch" else record.item_id_id if field == "item_id" else record.branch_id if field == "branch" else None for field in stock_fields]
         field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
 
 
@@ -344,6 +367,7 @@ def manage_stock(request):
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_itemstock',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_stock.html', {'info': info})
@@ -356,6 +380,7 @@ def manage_stock(request):
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_itemstock',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_stock.html', {'info': info})
 
@@ -382,6 +407,8 @@ def manage_sales(request):
         if getattr(record, 'is_deleted') == False:
             filtered_fields = [getattr(record, field) if field != "branch_id" else record.branch_id_id if field == "branch_id" else None for field in sale_fields]
             field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
 
 
@@ -436,6 +463,7 @@ def manage_sales(request):
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_sales',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_sales.html', {'info': info})
@@ -448,6 +476,7 @@ def manage_sales(request):
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_sales',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_sales.html', {'info': info})
 
@@ -474,6 +503,8 @@ def manage_sale_products(request):
         if getattr(record, 'is_deleted') == False:
             filtered_fields = [getattr(record, field) if field == "product_quantity" else record.sale_id_id if field == "sale_id" else record.product_id_id if field == "product_id" else None for field in sale_product_fields]
             field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
 
 
@@ -534,6 +565,7 @@ def manage_sale_products(request):
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_saleproducts',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_sale_products.html', {'info': info})
@@ -546,6 +578,7 @@ def manage_sale_products(request):
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_saleproducts',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_sale_products.html', {'info': info})
 
@@ -571,6 +604,8 @@ def manage_product_ingredients(request):
     for record in data:
         filtered_fields = [getattr(record, field) if field == "ingredient_quantity" else record.product_id_id if field == "product_id" else record.ingredient_id_id if field == "ingredient_id" else None for field in product_ingredient_fields]
         field_values.append(filtered_fields)
+
+    navbar_info = get_navbar_fields(request)
 
 
 
@@ -630,6 +665,7 @@ def manage_product_ingredients(request):
                 'crud_error': crud_error,
                 'row_editing_data': row_editing_data,
                 'inheriting_page_add_row_permission': 'stock_management_ui.add_productingredients',
+                'navbar_info': navbar_info,
             }
 
             return render(request, 'manage_product_ingredients.html', {'info': info})
@@ -642,5 +678,6 @@ def manage_product_ingredients(request):
         'crud_error': crud_error,
         'row_editing_data': row_editing_data,
         'inheriting_page_add_row_permission': 'stock_management_ui.add_productingredients',
+        'navbar_info': navbar_info,
     }
     return render(request, 'manage_product_ingredients.html', {'info': info})

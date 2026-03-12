@@ -10,9 +10,10 @@
 </head>
 <body {% block body_attributes %}{% endblock %}>
     <div class="topnav">
-        <!--Navbar elements in this block-->
-        {% block navbar %}
-        {% endblock %}
+    <a href="/login">Logout</a>
+        {% for link in info.navbar_info %}
+            <a href="{{ link.url }}">{{ link.name }}</a>
+        {% endfor %}
     </div>
     <h1>{% block title %}{% endblock %}</h1>
     {% block body %}{% endblock %}
