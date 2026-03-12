@@ -588,7 +588,7 @@ def manage_product_ingredients(request):
 
     #PREPARING DATA TO SEND TO THE WEBPAGE
 
-    product_ingredient = ProductIngredients.objects.get(product_id=1, ingredient_id=50)
+    product_ingredient = ProductIngredients.objects.get(product_id=7, ingredient_id=107)
     unfiltered_fields = product_ingredient._meta.get_fields()
     data = ProductIngredients.objects.all()
 
